@@ -195,19 +195,21 @@ the console output to help us determine where it failed.
 You will not need sudo for the install as long as the items in the prerequisites
 section have been installed properly.
 
+<!--- this command is removed from tools.sh
 ```
 ./tools.sh prep
 ```
 You can re-run prep over and over again as it, in most cases, will not
 re-install because it does checks to make sure the component exists or not,
 if it exists it does not run again.
+-->
 
-## Running the tests ##
+### Running the tests ###
 
 Tests are handled by PyTest via Tox
 
 ```
-./tools.sh test
+./tools.sh agent-test
 ```
 
 
@@ -218,15 +220,40 @@ do suggest you create the docs and look them over. Once this settles, we will
 likely have an online reference to these.
 
 ```
-./tools.sh docs
+./tools.sh agent-docs
 ```
 
-
+<!--- this is already done
 ## Deployment
 
 We are working on Docker images for easy deployment. For the moment, the
 installation relies on building from source on the target machine.
+-->
 
+### Quick Start ###
+
+* Make sure you can install [https://www.docker.com/](Docker) on your target OS.
+* Install Docker. For Ubuntu 16.04, here are the instructions
+  Be sure to install docker as user in sudo group, not as root. If installed as root, must have to add user to docker user group. Everything is discussed in the following links.
+  [https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04](Installing Docker on Ubuntu 16.04)
+  [https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-16-04](Installing Docker-Compose on Ubuntu 16.04)
+* Checkout SingularityNET code
+  git clone https://github.com/singnet/singnet.git
+* Check SingularityNET installation (in root singnet folder)
+```
+  ./tools.sh agent-test
+  ./tools.sh alice
+```
+* Try [https://github.com/singnet/singnet/blob/master/tools.sh](other commands)
+
+### Trouble Shooting ###
+
+Sometimes, is docker process is hanged blocking the port and you can not restart, shutdown the entire SingularityNET docker image with the following command:
+```
+$docker-compose down
+```
+
+To keep your SingulariytNET docker output to session console persistent, use Linux [https://www.rackaid.com/blog/linux-screen-tutorial-and-how-to/#starting](screen command)
 
 ## Built With
 
