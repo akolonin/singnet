@@ -233,10 +233,10 @@ installation relies on building from source on the target machine.
 ### Quick Start ###
 
 * Make sure you can install [https://www.docker.com/](Docker) on your target OS.
-* Install Docker. For Ubuntu 16.04, here are the instructions
-  Be sure to install docker as user in sudo group, not as root. If installed as root, must have to add user to docker user group. Everything is discussed in the following links.
-  [Installing Docker on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04)
-  [Installing Docker-Compose on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-16-04)
+* Install Docker. For Ubuntu 16.04, here are the instructions 
+  * Be sure to install docker as user in sudo group, not as root. If installed as root, must have to add user to docker user group. Everything is discussed in the following links.
+  * [Installing Docker on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04)
+  * [Installing Docker-Compose on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-16-04)
 * Checkout SingularityNET code
 ```
   git clone https://github.com/singnet/singnet.git
