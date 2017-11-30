@@ -20,10 +20,16 @@ from sn_agent.service_adapter import ServiceAdapterABC, ServiceManager
 
 logger = logging.getLogger(__name__)
 
+AIGENTS_GENERIC_ID = 'deadbeef-aaaa-bbbb-cccc-100000000001'
+AIGENTS_TEXT_CLUSTERER_ID = 'deadbeef-aaaa-bbbb-cccc-100000000002'
+AIGENTS_TEXT_EXTRACTOR_ID = 'deadbeef-aaaa-bbbb-cccc-100000000003'
+AIGENTS_SOCIAL_GRAPHER_ID = 'deadbeef-aaaa-bbbb-cccc-100000000004'
+AIGENTS_RSS_FEEDER_ID = 'deadbeef-aaaa-bbbb-cccc-100000000005'
+
 class AigentsAdapter(ServiceAdapterABC):
     type_name = "AigentsAdapter"
 
-    def __init__(self, app, service: Service, required_services: List[Service]) -> None:
+    def __init__(self, app, service: Service, required_services: List[Service] = None) -> None:
         super().__init__(app, service, required_services)
 
         self.settings = AigentsSettings()
@@ -54,9 +60,10 @@ class AigentsAdapter(ServiceAdapterABC):
         logger.info(url)
         r = session.post(url)
         if r is None or r.status_code != 200:
+            logger.error(url,r.status_code)
             raise RuntimeError("Aigents - no response")
         logger.info(r.text)
-        return r
+        return r.text
 
     def validate(self,data,key):
         if not key in data or len(data[key]) < 1:
@@ -95,15 +102,13 @@ class AigentsAdapter(ServiceAdapterABC):
             if not 'data' in job_data:
                 raise RuntimeError("Aigents - no input data")
 
-            r = self.aigents_perform(job_data['data'])
-            if r is None or r.status_code != 200:
-                raise RuntimeError("Aigents - no response")
+            response = self.aigents_perform(job_data['data'])
 
             # Add the job results to our combined results array for all job items.
             single_job_result = {
 		'adapter_type' : 'aigents',
 		'service_type' : job_data["type"], # TODO cleanup, based on service request and response ontology discussion?
-                'response_data': r.text
+                'response_data': response
             }
             results.append(single_job_result)
 
@@ -120,9 +125,11 @@ class AigentsTextsClustererAdapter(AigentsAdapter):
 
     def aigents_perform(self,data):
         texts = self.validate(data,"texts")
+        if texts == 'test':
+            return 'Ok.'
         s = self.create_session()
-        r = self.request(s,"You cluster format json texts '"+texts+"'!")
-        return r
+        response = self.request(s,"You cluster format json texts '"+texts+"'!")
+        return response
 
 class AigentsTextExtractorAdapter(AigentsAdapter):
     type_name = "AigentsTextExtractorAdapter"
@@ -130,6 +137,8 @@ class AigentsTextExtractorAdapter(AigentsAdapter):
     def aigents_perform(self,data):
         pattern = self.validate(data,"pattern")
         text = self.validate(data,"text")
+        if text == 'test' and pattern == 'test':
+            return 'Ok.'
         s = self.create_session()
         # TODO cleanup and streamline, make json in http header 'Accept': 'application/json'
         # specify format
@@ -142,22 +151,30 @@ class AigentsTextExtractorAdapter(AigentsAdapter):
         self.request(s,"no there is '"+pattern+"'.")
         # do extraction and request data
         self.request(s,"You reading '"+pattern+"' in '"+text+"'!")
-        r = self.request(s,"what is '"+pattern+"' text, about, context?")
+        response = self.request(s,"what is '"+pattern+"' text, about, context?")
         # clear user context
         self.request(s,"my knows no '"+pattern+"', trusts no '"+pattern+"'.")
         self.request(s,"my sites no '"+pattern+"', trusts no '"+text+"'.")
         self.request(s,"my format not json.")
-        return r
+        return response
 
 class AigentsRSSFeederAdapter(AigentsAdapter):
+
     type_name = "AigentsRSSFeederAdapter"
+
+    def __init__(self, app, service: Service, required_services: List[Service] = None) -> None:
+        super().__init__(app, service)
 
     def aigents_perform(self,data):
         area = self.validate(data,"area")
+        if area == 'test':
+            return 'Ok.'
         # sessionless request
         r = requests.post(self.settings.AIGENTS_PATH+"?rss%20"+area)
-        logger.info(r)
-        return r
+        if r is None or r.status_code != 200:
+            logger.error(url,r.status_code)
+            raise RuntimeError("Aigents - no response")
+        return r.text
 
 class AigentsSocialGrapherAdapter(AigentsAdapter):
     type_name = "AigentsSocialGrapherAdapter"
@@ -166,8 +183,10 @@ class AigentsSocialGrapherAdapter(AigentsAdapter):
         network = self.validate(data,"network")
         userid = self.validate(data,"userid")
         days = self.validate(data,"period")
+        if network == 'test' and userid == 'test' and days == 'test':
+            return 'Ok.'
         s = self.create_session()
         url = self.settings.AIGENTS_PATH+"?"+network+' id '+userid+' report, period '+days+', format json, authorities, fans, similar to me'
-        r = self.request(s,url)
-        return r
+        response = self.request(s,url)
+        return response
 
