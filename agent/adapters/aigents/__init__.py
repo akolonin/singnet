@@ -123,6 +123,9 @@ class AigentsAdapter(ServiceAdapterABC):
 class AigentsTextsClustererAdapter(AigentsAdapter):
     type_name = "AigentsTextsClustererAdapter"
 
+    def __init__(self, app, service: Service, required_services: List[Service] = None) -> None:
+        super().__init__(app, service)
+
     def aigents_perform(self,data):
         texts = self.validate(data,"texts")
         if texts == 'test':
@@ -133,6 +136,9 @@ class AigentsTextsClustererAdapter(AigentsAdapter):
 
 class AigentsTextExtractorAdapter(AigentsAdapter):
     type_name = "AigentsTextExtractorAdapter"
+
+    def __init__(self, app, service: Service, required_services: List[Service] = None) -> None:
+        super().__init__(app, service)
 
     def aigents_perform(self,data):
         pattern = self.validate(data,"pattern")
@@ -178,6 +184,9 @@ class AigentsRSSFeederAdapter(AigentsAdapter):
 
 class AigentsSocialGrapherAdapter(AigentsAdapter):
     type_name = "AigentsSocialGrapherAdapter"
+
+    def __init__(self, app, service: Service, required_services: List[Service] = None) -> None:
+        super().__init__(app, service)
 
     def aigents_perform(self,data):
         network = self.validate(data,"network")

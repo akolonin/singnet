@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 
 from adapters.aigents import AigentsRSSFeederAdapter, AIGENTS_RSS_FEEDER_ID
+from adapters.aigents import AigentsSocialGrapherAdapter, AIGENTS_SOCIAL_GRAPHER_ID
 from sn_agent import ontology as onto
 from sn_agent.job.job_descriptor import JobDescriptor
 from sn_agent.log import setup_logging
@@ -34,14 +35,12 @@ def test_aigents_rss_feeder_adapter(app):
     setup_logging()
     log.debug("Testing Aigents RSS Feeder Adapter")
 
-    type = 'rss_feed' #TODO make parameter
+    type = 'rss_feed'
     data = {'area': 'test'}
 
     # Setup a test jobpretending to reach Aigents RSS Feeder
     job_parameters = {  'input_type': 'attached',
-                        'input_data': {
-                            'type' : type, 'data' : data
-                        },
+                        'input_data': {'type' : type, 'data' : data},
                         'output_type': 'attached'
                  }
 
@@ -84,3 +83,45 @@ def test_aigents_rss_feeder_adapter(app):
 
     if results[0]['adapter_type'] == 'aigents' and results[0]['response_data'] == 'Ok.':
         log.debug("Aigents Adapter for "+type+" - Test Passed")
+
+
+def test_aigents_social_grapher_adapter(app):
+    setup_logging()
+    log.debug("Testing Aigents Social Grapher Adapter")
+
+    type = 'social_graph'
+    data = {'network': 'test', 'userid' : 'test', 'period' : 'test'}
+
+    job_parameters = {  'input_type': 'attached',
+                        'input_data': {'type' : type, 'data' : data},
+                        'output_type': 'attached'
+                 }
+
+    ontology = app['ontology']
+    aigents_service = ontology.get_service(AIGENTS_SOCIAL_GRAPHER_ID)
+
+    service_adapter = AigentsSocialGrapherAdapter(app, aigents_service)
+
+    service_descriptor = ServiceDescriptor(AIGENTS_SOCIAL_GRAPHER_ID)
+
+    job_list = [job_parameters]
+    job = JobDescriptor(service_descriptor, job_list)
+
+    setup_service_manager(app, [service_adapter])
+
+    try:
+        exception_caught = False
+        results = service_adapter.perform(job)
+    except RuntimeError as exception:
+        exception_caught = True
+        log.error("    Exception caught %s", exception)
+        log.debug("    Error performing %s %s", job, service_adapter)
+    assert not exception_caught
+
+    assert len(results) == 1
+    assert results[0]['adapter_type'] == 'aigents'
+    assert results[0]['response_data'] == 'Ok.'
+
+    if results[0]['adapter_type'] == 'aigents' and results[0]['response_data'] == 'Ok.':
+        log.debug("Aigents Adapter for "+type+" - Test Passed")
+
