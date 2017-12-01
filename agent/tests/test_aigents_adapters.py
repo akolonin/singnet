@@ -12,6 +12,8 @@ import pytest
 
 from adapters.aigents import AigentsRSSFeederAdapter, AIGENTS_RSS_FEEDER_ID
 from adapters.aigents import AigentsSocialGrapherAdapter, AIGENTS_SOCIAL_GRAPHER_ID
+from adapters.aigents import AigentsTextsClustererAdapter, AIGENTS_TEXTS_CLUSTERER_ID
+from adapters.aigents import AigentsTextExtractorAdapter, AIGENTS_TEXT_EXTRACTOR_ID
 from sn_agent import ontology as onto
 from sn_agent.job.job_descriptor import JobDescriptor
 from sn_agent.log import setup_logging
@@ -103,6 +105,88 @@ def test_aigents_social_grapher_adapter(app):
     service_adapter = AigentsSocialGrapherAdapter(app, aigents_service)
 
     service_descriptor = ServiceDescriptor(AIGENTS_SOCIAL_GRAPHER_ID)
+
+    job_list = [job_parameters]
+    job = JobDescriptor(service_descriptor, job_list)
+
+    setup_service_manager(app, [service_adapter])
+
+    try:
+        exception_caught = False
+        results = service_adapter.perform(job)
+    except RuntimeError as exception:
+        exception_caught = True
+        log.error("    Exception caught %s", exception)
+        log.debug("    Error performing %s %s", job, service_adapter)
+    assert not exception_caught
+
+    assert len(results) == 1
+    assert results[0]['adapter_type'] == 'aigents'
+    assert results[0]['response_data'] == 'Ok.'
+
+    if results[0]['adapter_type'] == 'aigents' and results[0]['response_data'] == 'Ok.':
+        log.debug("Aigents Adapter for "+type+" - Test Passed")
+
+
+def test_aigents_text_extractor_adapter(app):
+    setup_logging()
+    log.debug("Testing Aigents Text Extractor Adapter")
+
+    type = 'text_extract'
+    data = {'text': 'test', 'pattern' : 'test'}
+
+    job_parameters = {  'input_type': 'attached',
+                        'input_data': {'type' : type, 'data' : data},
+                        'output_type': 'attached'
+                 }
+
+    ontology = app['ontology']
+    aigents_service = ontology.get_service(AIGENTS_TEXT_EXTRACTOR_ID)
+
+    service_adapter = AigentsTextExtractorAdapter(app, aigents_service)
+
+    service_descriptor = ServiceDescriptor(AIGENTS_TEXT_EXTRACTOR_ID)
+
+    job_list = [job_parameters]
+    job = JobDescriptor(service_descriptor, job_list)
+
+    setup_service_manager(app, [service_adapter])
+
+    try:
+        exception_caught = False
+        results = service_adapter.perform(job)
+    except RuntimeError as exception:
+        exception_caught = True
+        log.error("    Exception caught %s", exception)
+        log.debug("    Error performing %s %s", job, service_adapter)
+    assert not exception_caught
+
+    assert len(results) == 1
+    assert results[0]['adapter_type'] == 'aigents'
+    assert results[0]['response_data'] == 'Ok.'
+
+    if results[0]['adapter_type'] == 'aigents' and results[0]['response_data'] == 'Ok.':
+        log.debug("Aigents Adapter for "+type+" - Test Passed")
+
+
+def test_aigents_text_clusterer_adapter(app):
+    setup_logging()
+    log.debug("Testing Aigents Text Clusterer Adapter")
+
+    type = 'texts_cluster'
+    data = {'texts' : 'test'}
+
+    job_parameters = {  'input_type': 'attached',
+                        'input_data': {'type' : type, 'data' : data},
+                        'output_type': 'attached'
+                 }
+
+    ontology = app['ontology']
+    aigents_service = ontology.get_service(AIGENTS_TEXTS_CLUSTERER_ID)
+
+    service_adapter = AigentsTextsClustererAdapter(app, aigents_service)
+
+    service_descriptor = ServiceDescriptor(AIGENTS_TEXTS_CLUSTERER_ID)
 
     job_list = [job_parameters]
     job = JobDescriptor(service_descriptor, job_list)

@@ -21,7 +21,7 @@ from sn_agent.service_adapter import ServiceAdapterABC, ServiceManager
 logger = logging.getLogger(__name__)
 
 AIGENTS_GENERIC_ID = 'deadbeef-aaaa-bbbb-cccc-100000000001'
-AIGENTS_TEXT_CLUSTERER_ID = 'deadbeef-aaaa-bbbb-cccc-100000000002'
+AIGENTS_TEXTS_CLUSTERER_ID = 'deadbeef-aaaa-bbbb-cccc-100000000002'
 AIGENTS_TEXT_EXTRACTOR_ID = 'deadbeef-aaaa-bbbb-cccc-100000000003'
 AIGENTS_SOCIAL_GRAPHER_ID = 'deadbeef-aaaa-bbbb-cccc-100000000004'
 AIGENTS_RSS_FEEDER_ID = 'deadbeef-aaaa-bbbb-cccc-100000000005'
